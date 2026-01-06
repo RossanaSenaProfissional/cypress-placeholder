@@ -1,5 +1,4 @@
 name: CI - Cypress API tests
-
 on:
   push:
     branches: [ main ]
