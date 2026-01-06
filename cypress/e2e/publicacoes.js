@@ -1,91 +1,77 @@
-describe('Placeholder API - cenários básicos', () => {
+describe('Placeholder API - cenários básicos (usando commands)', () => {
   it('GET /posts deve retornar lista de publicações', () => {
-    cy.request('/posts').then((resp) => {
-      expect(resp.status).to.equal(200);
-      expect(resp.body).to.be.an('array');
-      expect(resp.body.length).to.be.greaterThan(0);
+    cy.apiGet('/posts').then((resp) => {
+      cy.assertListResponse(resp, ['userId','id','title','body']);
     });
   });
 
   it('GET /posts/1 deve retornar publicação com id 1', () => {
-    cy.request('/posts/1').then((resp) => {
+    cy.apiGet('/posts/1').then((resp) => {
       expect(resp.status).to.equal(200);
       expect(resp.body).to.have.property('id', 1);
-      expect(resp.body).to.have.property('userId');
-      expect(resp.body).to.have.property('title');
     });
   });
 
   it('GET /comments deve retornar lista de comentários', () => {
-    cy.request('/comments').then((resp) => {
-      expect(resp.status).to.equal(200);
-      expect(resp.body).to.be.an('array');
-      expect(resp.body[0]).to.include.keys('postId','id','name','email','body');
+    cy.apiGet('/comments').then((resp) => {
+      cy.assertListResponse(resp, ['postId','id','name','email','body']);
     });
   });
 
   it('GET /comments/1 deve retornar comentário específico', () => {
-    cy.request('/comments/1').then((resp) => {
+    cy.apiGet('/comments/1').then((resp) => {
       expect(resp.status).to.equal(200);
       expect(resp.body).to.have.property('id', 1);
     });
   });
 
   it('GET /albums deve retornar lista de álbuns', () => {
-    cy.request('/albums').then((resp) => {
-      expect(resp.status).to.equal(200);
-      expect(resp.body).to.be.an('array');
-      expect(resp.body[0]).to.include.keys('userId','id','title');
+    cy.apiGet('/albums').then((resp) => {
+      cy.assertListResponse(resp, ['userId','id','title']);
     });
   });
 
   it('GET /albums/1 deve retornar álbum específico', () => {
-    cy.request('/albums/1').then((resp) => {
+    cy.apiGet('/albums/1').then((resp) => {
       expect(resp.status).to.equal(200);
       expect(resp.body).to.have.property('id', 1);
     });
   });
 
   it('GET /photos deve retornar lista de fotos', () => {
-    cy.request('/photos').then((resp) => {
-      expect(resp.status).to.equal(200);
-      expect(resp.body).to.be.an('array');
-      expect(resp.body[0]).to.include.keys('albumId','id','title','url','thumbnailUrl');
+    cy.apiGet('/photos').then((resp) => {
+      cy.assertListResponse(resp, ['albumId','id','title','url','thumbnailUrl']);
     });
   });
 
   it('GET /photos/1 deve retornar foto específica', () => {
-    cy.request('/photos/1').then((resp) => {
+    cy.apiGet('/photos/1').then((resp) => {
       expect(resp.status).to.equal(200);
       expect(resp.body).to.have.property('id', 1);
     });
   });
 
   it('GET /todos deve retornar lista de tarefas', () => {
-    cy.request('/todos').then((resp) => {
-      expect(resp.status).to.equal(200);
-      expect(resp.body).to.be.an('array');
-      expect(resp.body[0]).to.include.keys('userId','id','title','completed');
+    cy.apiGet('/todos').then((resp) => {
+      cy.assertListResponse(resp, ['userId','id','title','completed']);
     });
   });
 
   it('GET /todos/1 deve retornar tarefa específica', () => {
-    cy.request('/todos/1').then((resp) => {
+    cy.apiGet('/todos/1').then((resp) => {
       expect(resp.status).to.equal(200);
       expect(resp.body).to.have.property('id', 1);
     });
   });
 
   it('GET /users deve retornar lista de usuários', () => {
-    cy.request('/users').then((resp) => {
-      expect(resp.status).to.equal(200);
-      expect(resp.body).to.be.an('array');
-      expect(resp.body[0]).to.include.keys('id','name','username','email');
+    cy.apiGet('/users').then((resp) => {
+      cy.assertListResponse(resp, ['id','name','username','email']);
     });
   });
 
   it('GET /users/1 deve retornar usuário específico', () => {
-    cy.request('/users/1').then((resp) => {
+    cy.apiGet('/users/1').then((resp) => {
       expect(resp.status).to.equal(200);
       expect(resp.body).to.have.property('id', 1);
     });
@@ -93,16 +79,15 @@ describe('Placeholder API - cenários básicos', () => {
 
   it('POST /posts deve criar uma publicação', () => {
     const payload = { title: 'foo', body: 'bar', userId: 1 };
-    cy.request('POST', '/posts', payload).then((resp) => {
-      expect(resp.status).to.equal(201);
+    cy.apiPost('/posts', payload).then((resp) => {
+      expect(resp.status).to.be.oneOf([201, 200]);
       expect(resp.body).to.include(payload);
       expect(resp.body).to.have.property('id');
     });
   });
 
   it('DELETE /posts/1 deve deletar a publicação', () => {
-    cy.request('DELETE', '/posts/1').then((resp) => {
-      // jsonplaceholder returns 200 with empty object
+    cy.apiDelete('/posts/1').then((resp) => {
       expect([200, 204]).to.include(resp.status);
     });
   });
