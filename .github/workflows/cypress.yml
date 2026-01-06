@@ -3,7 +3,7 @@ name: CI - Cypress API tests
 on:
   push:
     branches: [ main ]
-  pull_request:
+  pull_request: {}
 
 jobs:
   test:
